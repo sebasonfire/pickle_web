@@ -17,7 +17,7 @@ exports.handler = async function(event) {
     // --- ¡¡¡ACCIÓN REQUERIDA!!! ---
     // Cambia la siguiente línea por un email de un dominio que hayas
     // verificado en tu cuenta de Resend.com
-    const fromAddress = 'Pickle Funding <no-reply@tu-dominio-verificado.com>';
+    const fromAddress = 'Pickle Funding <sdgraphicsonfire@gmail.com>';
     // Por ejemplo: 'Pickle Funding <applications@picklefunding.com>'
 
     console.log(`Preparing to send email from: ${fromAddress} to: ${to}`);
