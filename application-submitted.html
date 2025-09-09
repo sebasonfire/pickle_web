@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Application Submitted | Pickle Funding</title>
+
+  <!-- Usa tu hoja de estilos principal -->
+  <link rel="stylesheet" href="/demos/elearning/elearning.css" />
+
+  <style>
+    /* Estilos mínimos para la página de éxito (compatibles con tu CSS) */
+    .pf-hero { padding: 40px 0 10px; text-align: center; }
+    .pf-hero p { margin: 0; opacity:.85; }
+    .pf-success { max-width: 880px; margin: 0 auto; }
+    .pf-check {
+      width: 72px; height:72px; border-radius: 50%;
+      display:inline-flex; align-items:center; justify-content:center;
+      background:#e9f7ef;
+      margin-bottom: 14px;
+    }
+    .pf-check svg { width:36px; height:36px; }
+    .pf-muted { color:#667085; }
+    .pf-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .btn-soft { background:#f2f4f7; border:1px solid #e5e7eb; }
+  </style>
+</head>
+<body>
+
+  <section class="pf-hero">
+    <div class="container">
+      <h1 class="alt-font fw-700 mb-10px">Application submitted</h1>
+      <p>Thank you for applying with Pickle Funding.</p>
+    </div>
+  </section>
+
+  <section class="pb-40px pt-10px">
+    <div class="container pf-success">
+      <div class="card pf-card p-4 text-center">
+        <div class="pf-check" aria-hidden="true">
+          <!-- Check icon -->
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="11" stroke="#39b54a" stroke-width="2"/>
+            <path d="M7 12.5l3.2 3.2L17.5 8.7" stroke="#39b54a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <h2 class="mb-5px">We’ve received your request</h2>
+        <p class="pf-muted mb-20px">
+          Our team is reviewing your information. We’ll contact you soon with next steps and any additional
+          documents required to complete the process.
+        </p>
+
+        <!-- (Opcional) Si en el futuro generas un ID de caso, muéstralo aquí -->
+        <!-- <p class="small pf-muted">Reference: <strong>PF-2025-001234</strong></p> -->
+
+        <div class="row text-start mt-3 mb-20px">
+          <div class="col-12 col-md-10 mx-auto">
+            <div class="pf-terms">
+              <strong>What happens next?</strong>
+              <ul class="mb-0">
+                <li>We may reach out if we need clarification or additional documentation.</li>
+                <li>Keep an eye on your inbox for updates.</li>
+                <li>If you need to add bank statements or IDs, you can reply to our email with attachments.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-actions">
+          <a class="btn btn-dark" href="/">Back to Home</a>
+          <a class="btn btn-soft" href="mailto:support@picklesupport.com">Contact Support</a>
+          <button class="btn btn-soft" onclick="window.print()">Print receipt</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- (Opcional) Autoredirección a home después de X segundos -->
+  <!--
+  <script>
+    setTimeout(function(){ window.location.href='/' }, 120000); // 120s
+  </script>
+  -->
+</body>
+</html>
