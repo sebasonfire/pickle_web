@@ -1,10 +1,7 @@
-toml
-    [build]
-      # Esta línea le dice a Netlify dónde encontrar tus funciones
-      functions = "netlify/functions"
+[build]
+  functions = "netlify/functions"
 
-    [[redirects]]
-      # Esta regla es para que la URL /thanks-funding funcione sin el .html
-      from = "/thanks-funding"
-      to = "/thanks-funding.html"
-      status = 200
+[[redirects]]
+  from = "/thanks-funding"
+  to = "/thanks-funding.html"
+  status = 200
