@@ -90,16 +90,7 @@
     <div class="row row-cols-md-1 justify-content-center mb-10 sm-mb-0">
       <div class="col-xl-9 col-lg-10">
         <!-- Partner with us (Netlify) -->
-<form id="partnerForm" name="PartnerWithUs"
-      method="POST"
-      data-netlify="true"
-      netlify-honeypot="bot-field"
-      action="/thanks-partner.html"
-      class="contact-form-style-03">
-
-  <!-- Requerido por Netlify -->
-  <input type="hidden" name="form-name" value="PartnerWithUs">
-  <p class="d-none"><label>No completar: <input name="bot-field"></label></p>
+<form id="partnerForm" name="PartnerWithUs" method="POST" class="contact-form-style-03">
 
   <!-- IMPORTANTE: la fila que se había perdido -->
   <div class="row g-4">
@@ -320,5 +311,50 @@
         <script type="text/javascript" src="js/vendors.min.js"></script>
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCA56KqSJ11nQUw_tXgXyNMiPmQeM7EaSA&callback=initMap"></script>
         <script type="text/javascript" src="js/main.js"></script>
+        <script>
+(function () {
+  const form = document.getElementById('partnerForm');
+  // Creamos un div para los resultados, aunque no exista en el HTML, para evitar errores.
+  let results = document.getElementById('formResults');
+  if (!results) {
+    results = document.createElement('div');
+    form.prepend(results); // Lo añadimos al principio del formulario
+  }
+
+  async function postJSON(url, payload) {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const text = await res.text();
+    if (!res.ok) throw new Error(text || 'Error from server');
+    try { return JSON.parse(text); } catch { return {}; }
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    results.innerHTML = '';
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnHTML = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<span><span class="btn-double-text" data-text="Sending...">Sending...</span></span>`;
+
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    try {
+      // Apuntamos a nuestra nueva función
+      await postJSON('/.netlify/functions/send-partner-email', data);
+      // Redirigimos a la página de gracias correcta
+      window.location.href = '/thanks-partner.html';
+    } catch (err) {
+      results.innerHTML = '<div class="alert alert-danger">There was a problem sending your message. Please try again.</div>';
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnHTML;
+      console.error('Partner form error:', err);
+    }
+  });
+})();
+</script>
     </body>
 </html>
