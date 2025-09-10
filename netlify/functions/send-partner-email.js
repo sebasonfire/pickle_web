@@ -1,9 +1,8 @@
-// Versión Final: 1.0
+// Función para el formulario "Partner With Us"
 const { Resend } = require('resend');
 
 exports.handler = async function(event) {
-  // Log #1: Para confirmar que el archivo se está ejecutando.
-  console.log("--- Function send-funding-email invoked (v1.0) ---");
+  console.log("--- Function send-partner-email invoked ---");
 
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
@@ -11,45 +10,36 @@ exports.handler = async function(event) {
 
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
-    const payload = JSON.parse(event.body);
-    const { to, subject, fields, files, signatureDataUrl } = payload;
+    const fields = JSON.parse(event.body);
 
-    // ¡Asegúrate de que este es tu dominio verificado en Resend!
-    const fromAddress = 'Pickle Funding <subs@picklefunding.com>';
+    // Usamos tu dominio verificado para el envío
+    const fromAddress = 'Pickle Funding Partners <no-reply@picklefunding.com>';
 
-    console.log(`Preparing to send email from: ${fromAddress}`);
+    // El destino que solicitaste
+    const toAddress = 'partners@picklefunding.com';
 
-    if (!fields) {
-      console.error("Validation Error: Missing 'fields' object in payload.");
-      return { statusCode: 400, body: "Bad Request: Missing fields." };
-    }
+    console.log(`Preparing to send partner email to: ${toAddress}`);
 
-    let emailHtml = `<h1>New Funding Application</h1><h2>${fields['legal_company_name'] || ''}</h2><hr>`;
-    for (const [key, value] of Object.entries(fields)) {
-      if (value) {
-        const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        emailHtml += `<p><strong>${fieldName}:</strong> ${value}</p>`;
-      }
-    }
-
-    const attachments = [];
-    if (files && files.length > 0) {
-      files.forEach(file => {
-        attachments.push({ filename: file.name, content: file.base64.split("base64,")[1] });
-      });
-    }
-    if (signatureDataUrl) {
-      attachments.push({ filename: 'signature.png', content: signatureDataUrl.split("base64,")[1] });
-    }
+    // Construimos el email en HTML con todos los campos del formulario
+    let emailHtml = `<h1>New "Partner With Us" Submission</h1>`;
+    emailHtml += `<h2>Company: ${fields.company_name || 'N/A'}</h2><hr>`;
+    emailHtml += `<p><strong>Full Name:</strong> ${fields.full_name || ''}</p>`;
+    emailHtml += `<p><strong>Phone:</strong> ${fields.phone || ''}</p>`;
+    emailHtml += `<p><strong>Email:</strong> ${fields.email || ''}</p>`;
+    emailHtml += `<p><strong>Company Name:</strong> ${fields.company_name || ''}</p>`;
+    emailHtml += `<p><strong>Direct Lender?:</strong> ${fields.direct_lender || ''}</p>`;
+    emailHtml += `<p><strong>Number of Employees:</strong> ${fields.employees || ''}</p>`;
+    emailHtml += `<p><strong>Avg. Units Funded Monthly:</strong> ${fields.avg_units || ''}</p>`;
+    emailHtml += `<p><strong>Years in Business:</strong> ${fields.years_in_business || ''}</p>`;
+    emailHtml += `<p><strong>Avg. Monthly Funding Volume:</strong> ${fields.avg_monthly_volume || ''}</p>`;
+    emailHtml += `<p><strong>Top 3 Lenders:</strong> ${fields.top_lenders || ''}</p>`;
+    emailHtml += `<hr><p><strong>Message:</strong></p><p>${fields.message || 'No message provided.'}</p>`;
     
-    console.log(`Sending email with ${attachments.length} attachments.`);
-
     const data = await resend.emails.send({
       from: fromAddress,
-      to: ['sdgraphicsonfire@gmail.com'], // Tu correo para la prueba
-      subject: fields['legal_company_name'] ? `Web Application — ${fields['legal_company_name']}` : 'New Web Application',
+      to: [toAddress],
+      subject: `New Partner Submission: ${fields.company_name || fields.full_name}`,
       html: emailHtml,
-      attachments: attachments,
     });
 
     if (data.error) {
@@ -57,7 +47,7 @@ exports.handler = async function(event) {
       throw new Error(data.error.message);
     }
 
-    console.log("--- Email sent successfully! ---", data.id);
+    console.log("--- Partner email sent successfully! ---", data.id);
     return { statusCode: 200, body: JSON.stringify({ id: data.id }) };
 
   } catch (error) {
