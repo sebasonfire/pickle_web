@@ -14,7 +14,7 @@ exports.handler = async function(event) {
 
     // --- ¡¡¡ACCIÓN REQUERIDA!!! ---
     // ¡Asegúrate de que este sea tu dominio real verificado en Resend!
-    const fromAddress = 'Pickle Funding <applications@picklefunding.com>'; // <-- CAMBIA ESTO
+    const fromAddress = 'Pickle Funding <subs@picklefunding.com>'; // <-- CAMBIA ESTO
 
     console.log(`Preparing to send email from: ${fromAddress} to: ${to}`);
 
