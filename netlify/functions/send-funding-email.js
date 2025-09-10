@@ -17,7 +17,7 @@ exports.handler = async function(event) {
     // --- ¡¡¡ACCIÓN REQUERIDA!!! ---
     // Cambia la siguiente línea por un email de un dominio que hayas
     // verificado en tu cuenta de Resend.com
-    const fromAddress = 'Pickle Funding <sdgraphicsonfire@gmail.com>';
+    const fromAddress = 'Pickle Funding <no-reply@tu-dominio-verificado.com>';
     // Por ejemplo: 'Pickle Funding <applications@picklefunding.com>'
 
     console.log(`Preparing to send email from: ${fromAddress} to: ${to}`);
@@ -47,13 +47,15 @@ exports.handler = async function(event) {
     
     console.log(`Sending email with ${attachments.length} attachments.`);
 
-    const data = await resend.emails.send({
-      from: fromAddress,
-      to: [to],
-      subject: subject,
-      html: emailHtml,
-      attachments: attachments,
-    });
+
+const data = await resend.emails.send({
+  from: fromAddress, // La dirección 'from' que configuraste arriba
+  to: ['sdgraphicsonfire@gmail.com'], // ¡Aquí pones tu email para la prueba!
+  subject: subject,
+  html: emailHtml,
+  attachments: attachments,
+});
+
 
     console.log("--- Email sent successfully! ---", data);
     return { statusCode: 200, body: JSON.stringify(data) };
