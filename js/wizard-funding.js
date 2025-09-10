@@ -1,4 +1,4 @@
-// Versión Final: 3.1 - Corregida
+// Versión Final: 4.0 - Con validación de tamaño de archivo
 (function () {
   const form = document.getElementById('merchant-app');
   if (!form) return;
@@ -86,7 +86,6 @@
       fileListContainer.innerHTML = '';
       if (!input.files || input.files.length === 0) return;
       const fileNames = Array.from(input.files).map(f => f.name).join(', ');
-      // ESTA LÍNEA ESTABA ROTA. AHORA ESTÁ CORREGIDA.
       fileListContainer.innerHTML = `<div class="pf-file-item">${fileNames} (${input.files.length} file(s))</div>`;
     };
     dropZone.addEventListener('click', () => input.click());
@@ -123,6 +122,27 @@
     submitBtn.innerHTML = '<span class="btn-double-text">Sending…</span>';
     pfAlerts.innerHTML = '';
 
+    // --- ¡NUEVA VALIDACIÓN DE TAMAÑO DE ARCHIVO! ---
+    const MAX_SIZE_MB = 5;
+    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+    let totalSize = 0;
+    const fileInputs = form.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(input => {
+      if (input.files) {
+        Array.from(input.files).forEach(file => {
+          totalSize += file.size;
+        });
+      }
+    });
+
+    if (totalSize > MAX_SIZE_BYTES) {
+      pfAlerts.innerHTML = `<div class="alert alert-danger">Total file size is too large. The limit is ${MAX_SIZE_MB}MB. Please upload smaller files or submit without documents.</div>`;
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnHTML;
+      return; // Detenemos el envío
+    }
+    // --- FIN DE LA VALIDACIÓN ---
+
     try {
       const fd = new FormData(form);
       const fields = {};
@@ -132,20 +152,20 @@
         }
       }
 
-      const inputs = form.querySelectorAll('input[type="file"]');
       const filesPayload = [];
-      for (const input of inputs) {
-        if (!input.files || input.files.length === 0) continue;
-        for (const f of input.files) {
-          if (f.size === 0) continue;
-          const base64 = await fileToBase64(f);
-          filesPayload.push({ name: f.name, type: f.type, base64 });
+      for (const input of fileInputs) {
+        if (input.files) {
+          for (const f of input.files) {
+            if (f.size > 0) {
+              const base64 = await fileToBase64(f);
+              filesPayload.push({ name: f.name, type: f.type, base64 });
+            }
+          }
         }
       }
 
       const signatureDataUrl = grabSignatureDataURL();
 
-      // Dejamos la función con el nombre que habías puesto. Si quieres volver a la anterior, cámbialo aquí.
       const res = await fetch('/.netlify/functions/submit-funding-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
