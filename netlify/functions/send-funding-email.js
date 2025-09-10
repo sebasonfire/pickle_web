@@ -1,11 +1,9 @@
 const { Resend } = require('resend');
 
 exports.handler = async function(event) {
-  // LOG INICIAL: Para confirmar que la función se está ejecutando
   console.log("--- Function send-funding-email invoked ---");
 
   if (event.httpMethod !== 'POST') {
-    console.log("Method not allowed:", event.httpMethod);
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
@@ -15,15 +13,13 @@ exports.handler = async function(event) {
     const { to, subject, fields, files, signatureDataUrl } = payload;
 
     // --- ¡¡¡ACCIÓN REQUERIDA!!! ---
-    // Cambia la siguiente línea por un email de un dominio que hayas
-    // verificado en tu cuenta de Resend.com
-    const fromAddress = 'Pickle Funding <no-reply@tu-dominio-verificado.com>';
-    // Por ejemplo: 'Pickle Funding <applications@picklefunding.com>'
+    // ¡Asegúrate de que este sea tu dominio real verificado en Resend!
+    const fromAddress = 'Pickle Funding <applications@picklefunding.com>'; // <-- CAMBIA ESTO
 
     console.log(`Preparing to send email from: ${fromAddress} to: ${to}`);
 
     if (!to || !subject || !fields) {
-      console.error("Validation Error: Missing 'to', 'subject', or 'fields'");
+      console.error("Validation Error: Missing required fields.");
       return { statusCode: 400, body: "Bad Request: Missing required email fields." };
     }
 
@@ -47,24 +43,31 @@ exports.handler = async function(event) {
     
     console.log(`Sending email with ${attachments.length} attachments.`);
 
+    const data = await resend.emails.send({
+      from: fromAddress,
+      to: ['sdgraphicsonfire@gmail.com'], // Lo dejamos con tu correo para la prueba
+      subject: subject,
+      html: emailHtml,
+      attachments: attachments,
+    });
 
-const data = await resend.emails.send({
-  from: fromAddress, // La dirección 'from' que configuraste arriba
-  to: ['sdgraphicsonfire@gmail.com'], // ¡Aquí pones tu email para la prueba!
-  subject: subject,
-  html: emailHtml,
-  attachments: attachments,
-});
-
+    // ¡¡¡NUEVA VERIFICACIÓN IMPORTANTE!!!
+    // Revisamos si Resend nos devolvió un error en la respuesta
+    if (data.error) {
+      console.error("!!! RESEND VALIDATION ERROR !!!", data.error);
+      // Lanzamos un error para que caiga en el bloque catch y no dé una falsa sensación de éxito
+      throw new Error(data.error.message);
+    }
 
     console.log("--- Email sent successfully! ---", data);
     return { statusCode: 200, body: JSON.stringify(data) };
 
   } catch (error) {
     console.error("!!! CRITICAL ERROR !!!", error);
+    // Ahora los errores de validación también llegarán aquí
     return {
       statusCode: 500,
       body: JSON.stringify({ message: error.message || 'An internal server error occurred.' }),
     };
   }
-};  
+};
