@@ -1,5 +1,7 @@
 {
+  "name": "pickle-funding-site",
+  "version": "1.0.0",
   "dependencies": {
-    "resend": "^6.0.3"
+    "resend": "^3.2.0"
   }
 }
