@@ -1,9 +1,8 @@
-// Versión Final: 1.0 (Destino: subs@picklefunding.com)
+// Versión Final: 2.0 (Destino: subs@picklefunding.com)
 const { Resend } = require('resend');
 
 exports.handler = async function(event) {
-  // Log #1: Para confirmar que el archivo se está ejecutando.
-  console.log("--- Function send-funding-email invoked (v1.0) ---");
+  console.log("--- Function send-funding-email invoked (v2.0) ---");
 
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
@@ -14,14 +13,11 @@ exports.handler = async function(event) {
     const payload = JSON.parse(event.body);
     const { fields, files, signatureDataUrl } = payload;
 
-    // ¡Asegúrate de que este es tu dominio verificado en Resend!
     const fromAddress = 'Pickle Funding App <no-reply@picklefunding.com>';
 
-    console.log(`Preparing to send email from: ${fromAddress}`);
-
     if (!fields) {
-      console.error("Validation Error: Missing 'fields' object in payload.");
-      return { statusCode: 400, body: "Bad Request: Missing fields." };
+      console.error("Validation Error: Missing 'fields' from payload.");
+      return { statusCode: 400, body: JSON.stringify({ message: "Bad Request: Missing form fields." }) };
     }
 
     let emailHtml = `<h1>New Funding Application</h1><h2>${fields['legal_company_name'] || ''}</h2><hr>`;
@@ -42,11 +38,11 @@ exports.handler = async function(event) {
       attachments.push({ filename: 'signature.png', content: signatureDataUrl.split("base64,")[1] });
     }
     
-    console.log(`Sending email with ${attachments.length} attachments.`);
+    console.log(`Sending email with ${attachments.length} attachments to subs@picklefunding.com.`);
 
     const data = await resend.emails.send({
       from: fromAddress,
-      to: ['subs@picklefunding.com'], // <-- ¡CORREO DE DESTINO CORRECTO!
+      to: ['subs@picklefunding.com'],
       subject: fields['legal_company_name'] ? `Web Application — ${fields['legal_company_name']}` : 'New Web Application',
       html: emailHtml,
       attachments: attachments,
