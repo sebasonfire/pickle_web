@@ -147,7 +147,7 @@
 
       const signatureDataUrl = grabSignatureDataURL();
 
-      const res = await fetch('/.netlify/functions/send-funding-email', {
+      const res = await fetch('/.netlify/functions/submit-funding-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
