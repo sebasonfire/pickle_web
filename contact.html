@@ -175,12 +175,8 @@
                 <div class="row row-cols-md-1 justify-content-center mb-10 sm-mb-0">
                     <div class="col-xl-9 col-lg-10">
                        
-<form name="Contact"
-      method="POST"
-      data-netlify="true"
-      netlify-honeypot="bot-field"
-      action="/thanks-contact.html"
-      class="contact-form-style-03">
+<form id="contactForm" name="Contact" method="POST" class="contact-form-style-03">
+  <div id="formResults" class="w-100"></div>
 
   <!-- Netlify needs this hidden field -->
   <input type="hidden" name="form-name" value="Contact" />
