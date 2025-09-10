@@ -1,7 +1,9 @@
+// Versión Final: 1.0
 const { Resend } = require('resend');
 
 exports.handler = async function(event) {
-  console.log("--- Function send-funding-email invoked ---");
+  // Log #1: Para confirmar que el archivo se está ejecutando.
+  console.log("--- Function send-funding-email invoked (v1.0) ---");
 
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
@@ -12,15 +14,14 @@ exports.handler = async function(event) {
     const payload = JSON.parse(event.body);
     const { to, subject, fields, files, signatureDataUrl } = payload;
 
-    // --- ¡¡¡ACCIÓN REQUERIDA!!! ---
-    // ¡Asegúrate de que este sea tu dominio real verificado en Resend!
-    const fromAddress = 'Pickle Funding <subs@picklefunding.com>'; // <-- CAMBIA ESTO
+    // ¡Asegúrate de que este es tu dominio verificado en Resend!
+    const fromAddress = 'Pickle Funding <subs@picklefunding.com>';
 
-    console.log(`Preparing to send email from: ${fromAddress} to: ${to}`);
+    console.log(`Preparing to send email from: ${fromAddress}`);
 
-    if (!to || !subject || !fields) {
-      console.error("Validation Error: Missing required fields.");
-      return { statusCode: 400, body: "Bad Request: Missing required email fields." };
+    if (!fields) {
+      console.error("Validation Error: Missing 'fields' object in payload.");
+      return { statusCode: 400, body: "Bad Request: Missing fields." };
     }
 
     let emailHtml = `<h1>New Funding Application</h1><h2>${fields['legal_company_name'] || ''}</h2><hr>`;
@@ -45,26 +46,22 @@ exports.handler = async function(event) {
 
     const data = await resend.emails.send({
       from: fromAddress,
-      to: ['sdgraphicsonfire@gmail.com'], // Lo dejamos con tu correo para la prueba
-      subject: subject,
+      to: ['sdgraphicsonfire@gmail.com'], // Tu correo para la prueba
+      subject: fields['legal_company_name'] ? `Web Application — ${fields['legal_company_name']}` : 'New Web Application',
       html: emailHtml,
       attachments: attachments,
     });
 
-    // ¡¡¡NUEVA VERIFICACIÓN IMPORTANTE!!!
-    // Revisamos si Resend nos devolvió un error en la respuesta
     if (data.error) {
-      console.error("!!! RESEND VALIDATION ERROR !!!", data.error);
-      // Lanzamos un error para que caiga en el bloque catch y no dé una falsa sensación de éxito
+      console.error("!!! RESEND API ERROR !!!", data.error);
       throw new Error(data.error.message);
     }
 
-    console.log("--- Email sent successfully! ---", data);
-    return { statusCode: 200, body: JSON.stringify(data) };
+    console.log("--- Email sent successfully! ---", data.id);
+    return { statusCode: 200, body: JSON.stringify({ id: data.id }) };
 
   } catch (error) {
-    console.error("!!! CRITICAL ERROR !!!", error);
-    // Ahora los errores de validación también llegarán aquí
+    console.error("!!! CRITICAL FUNCTION ERROR !!!", error);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: error.message || 'An internal server error occurred.' }),
