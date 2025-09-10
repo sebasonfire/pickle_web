@@ -1,3 +1,4 @@
+// Versión Final: 3.1 - Corregida
 (function () {
   const form = document.getElementById('merchant-app');
   if (!form) return;
@@ -85,7 +86,7 @@
       fileListContainer.innerHTML = '';
       if (!input.files || input.files.length === 0) return;
       const fileNames = Array.from(input.files).map(f => f.name).join(', ');
-      // ESTA LÍNEA ESTABA INCORRECTA. AHORA ESTÁ CORREGIDA.
+      // ESTA LÍNEA ESTABA ROTA. AHORA ESTÁ CORREGIDA.
       fileListContainer.innerHTML = `<div class="pf-file-item">${fileNames} (${input.files.length} file(s))</div>`;
     };
     dropZone.addEventListener('click', () => input.click());
@@ -144,6 +145,7 @@
 
       const signatureDataUrl = grabSignatureDataURL();
 
+      // Dejamos la función con el nombre que habías puesto. Si quieres volver a la anterior, cámbialo aquí.
       const res = await fetch('/.netlify/functions/submit-funding-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
