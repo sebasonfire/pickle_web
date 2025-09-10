@@ -1,4 +1,3 @@
-// Versión Final: 2.0
 (function () {
   const form = document.getElementById('merchant-app');
   if (!form) return;
@@ -64,10 +63,7 @@
     document.getElementById('clearSig').addEventListener('click', () => signaturePad.clear());
     document.getElementById('undoSig').addEventListener('click', () => {
       const data = signaturePad.toData();
-      if (data && data.length > 0) {
-        data.pop();
-        signaturePad.fromData(data);
-      }
+      if (data && data.length > 0) { data.pop(); signaturePad.fromData(data); }
     });
   }
 
@@ -89,7 +85,8 @@
       fileListContainer.innerHTML = '';
       if (!input.files || input.files.length === 0) return;
       const fileNames = Array.from(input.files).map(f => f.name).join(', ');
-      fileListContainer.innerHTML `<div class="pf-file-item">${fileNames} (${input.files.length} file(s))</div>`;
+      // ESTA LÍNEA ESTABA INCORRECTA. AHORA ESTÁ CORREGIDA.
+      fileListContainer.innerHTML = `<div class="pf-file-item">${fileNames} (${input.files.length} file(s))</div>`;
     };
     dropZone.addEventListener('click', () => input.click());
     input.addEventListener('change', updateFileList);
